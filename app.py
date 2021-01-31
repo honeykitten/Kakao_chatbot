@@ -196,14 +196,6 @@ def stock():
 
     return jsonify(res)
 
-
-@app.route('/health', methods=['GET'])
-def health():
-    return jsonify({
-        'health': True,
-    })
-
-
 # 메인 함수
 if __name__ == '__main__':
 
