@@ -27,14 +27,24 @@ def weather():
 
         return jsonify(res)
 
-    if params.get('sys_location'):  # 지역을 세부 주소까지 받을 수 있게 3개로 나눔
+#    if params.get('sys_location'):  # 지역을 세부 주소까지 받을 수 있게 3개로 나눔
+#        location = params['sys_location']['value']
+#    if params.get('sys_location1'):
+#        location += f"+{params['sys_location1']['value']}"  # python 3.6 이상 f string 스타일로 실행
+#        location += f"+{params['sys_location2']['value']}"
+
+#    location_encoding = urllib.parse.quote(location + '+날씨')  # url 인코딩
+#    url = f'https://search.naver.com/search.naver?sm=top_hty&fbm=1&ie=utf8&query={location_encoding}'
+
+    if 'sys_location' in params.keys():  # 지역을 시 구 동으로 3개까지 입력을 받을 수 있어서 순서대로 location에 저장
         location = params['sys_location']['value']
-    if params.get('sys_location1'):
-        location += f"+{params['sys_location1']['value']}"  # python 3.6 이상 f string 스타일로 실행
-        location += f"+{params['sys_location2']['value']}"
+    if 'sys_location1' in params.keys():
+        location += ' + ' + params['sys_location1']['value']
+    if 'sys_location2' in params.keys():
+        location += ' + ' + params['sys_location2']['value']
 
     location_encoding = urllib.parse.quote(location + '+날씨')  # url 인코딩
-    url = f'https://search.naver.com/search.naver?sm=top_hty&fbm=1&ie=utf8&query={location_encoding}'
+    url = 'https://search.naver.com/search.naver?sm=top_hty&fbm=1&ie=utf8&query=%s' % (location_encoding)
 
     req = Request(url)
     page = urlopen(req)
