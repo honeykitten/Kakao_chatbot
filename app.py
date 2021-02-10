@@ -9,10 +9,9 @@ app = Flask(__name__)
 
 @app.route('/weather', methods=['POST'])  # 미세먼지 스킬로 연결된 경로
 def weather():
-
     req = request.get_json()
     params = req['action']['detailParams']
-    if not params.get('sys_location'): # 입력 텍스트에 지역이 없을 경우는 바로 경고 메시지 전송
+    if not params.get('sys_location'):  # 입력 텍스트에 지역이 없을 경우는 바로 경고 메시지 전송
         res = {
             "version": "2.0",
             "template": {
@@ -28,14 +27,13 @@ def weather():
 
         return jsonify(res)
 
-    if params.get('sys_location'): # 지역을 세부 주소까지 받을 수 있게 3개로 나눔
+    if params.get('sys_location'):  # 지역을 세부 주소까지 받을 수 있게 3개로 나눔
         location = params['sys_location']['value']
     if params.get('sys_location1'):
-        location += f"+{params['sys_location1']['value']}" # python 3.6 이상 f string 스타일로 실행
+        location += f"+{params['sys_location1']['value']}"  # python 3.6 이상 f string 스타일로 실행
         location += f"+{params['sys_location2']['value']}"
 
-
-    location_encoding = urllib.parse.quote(location + '+날씨') # url 인코딩
+    location_encoding = urllib.parse.quote(location + '+날씨')  # url 인코딩
     url = f'https://search.naver.com/search.naver?sm=top_hty&fbm=1&ie=utf8&query={location_encoding}'
 
     req = Request(url)
@@ -43,18 +41,18 @@ def weather():
     html = page.read()
     soup = BeautifulSoup(html, 'html.parser')
 
-    if soup.find('span', {'class':'btn_select'}) == None:    # 같은 이름 처리
-        region = soup.find('li', {'role' : 'option'}).text
+    if soup.find('span', {'class': 'btn_select'}) == None:  # 같은 이름 처리
+        region = soup.find('li', {'role': 'option'}).text
     else:
-        region = soup.find('span', {'class':'btn_select'}).text
+        region = soup.find('span', {'class': 'btn_select'}).text
 
     if params.get('sys_date_period'):
-        weekly_weather = soup.find_all('li', {'class':'date_info today'})
+        weekly_weather = soup.find_all('li', {'class': 'date_info today'})
 
-    elif not params.get('sys_date') or 'today' in params['sys_date']['value']: # 오늘 미세먼지 가져오기
+    elif not params.get('sys_date') or 'today' in params['sys_date']['value']:  # 오늘 미세먼지 가져오기
         info = soup.find('p', {'class': 'cast_txt'}).text
-        temp_rain_info = soup.find_all('dd', {'class':'weather_item _dotWrapper'})
-        temp = temp_rain_info[0].text.replace('도','')
+        temp_rain_info = soup.find_all('dd', {'class': 'weather_item _dotWrapper'})
+        temp = temp_rain_info[0].text.replace('도', '')
         rain_rate = temp_rain_info[8].text
         sub_info = soup.find_all('dd')
         finedust = sub_info[2].text.replace('㎍/㎥', '㎍/㎥ ')
