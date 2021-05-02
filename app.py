@@ -69,7 +69,7 @@ def weather():
         Ultrafinedust = sub_info[3].text.replace('㎍/㎥', '㎍/㎥ ')
 
         print(len(finedust))
-        if int(finedust[0:2]) > 31:
+        if float(finedust[0:2]) > 31:
             dust_status = "양집사의 코멘트: 마스크 착용을 권장합니다!😷"
         else:
             dust_status = "양집사의 코멘트: 미세먼지가 낮습니다. 마스크 착용을 하지 않으셔도 되겠네요.😊"
